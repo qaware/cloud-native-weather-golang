@@ -27,6 +27,7 @@ spec:
         livenessProbe:
           timeoutSeconds: 1
           initialDelaySeconds: 5
+          periodSeconds: 30
           httpGet:
             port: http
             path: "/"
