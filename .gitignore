@@ -1,7 +1,6 @@
 .dccache
 
-target/
-build/
+cloud-native-weather-golang
 
 .idea/
 .vscode/
