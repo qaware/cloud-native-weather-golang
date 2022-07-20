@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -25,7 +24,7 @@ func ConnectDatabase() {
 		panic("Failed to connect to weather database!")
 	}
 
-	database.Table("current_weather").AutoMigrate(&CurrentWeather{})
+	database.AutoMigrate(&CurrentWeather{})
 
 	// some connection pool tuning
 	sqlDB, _ := database.DB()
@@ -46,21 +45,20 @@ type CurrentWeather struct {
 // GetWeather returns the weather for a given city
 func GetOrRetrieveWeather(city string) CurrentWeather {
 	weather := CurrentWeather{}
-	err := DB.Table("current_weather").First(&weather, "city = ?", city).Error
-	if errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := DB.First(&weather, "city = ?", city).Error; err != nil {
 		// retrieve and store weather from OpenWeatherMap API
 		weather = retrieveWeather(city)
-		result := DB.Table("current_weather").Create(weather)
+		result := DB.Create(weather)
 		if result.Error != nil {
-			log.Fatalf("Error creating current weather %s", result.Error)
+			log.Printf("Error creating current weather %s", result.Error)
 		}
 	} else {
 		if nextUpdate().After(weather.NextUpdate) {
 			// retrieve and store weather from OpenWeatherMap API
 			weather = retrieveWeather(city)
-			result := DB.Table("current_weather").Save(&weather)
+			result := DB.Save(&weather)
 			if result.Error != nil {
-				log.Fatalf("Error updating current weather %s", result.Error)
+				log.Printf("Error updating current weather %s", result.Error)
 			}
 		}
 	}
@@ -69,7 +67,7 @@ func GetOrRetrieveWeather(city string) CurrentWeather {
 }
 
 func nextUpdate() time.Time {
-	return time.Now().AddDate(0, 0, 1)
+	return time.Now().Add(time.Hour * 8)
 }
 
 type response struct {
@@ -86,15 +84,15 @@ type weatherDetails struct {
 func retrieveWeather(city string) CurrentWeather {
 	weather := CurrentWeather{City: city, Weather: "Unknown", NextUpdate: nextUpdate()}
 
-	c := http.Client{Timeout: time.Duration(3) * time.Second}
+	c := http.Client{Timeout: time.Second * 30}
 	uri := fmt.Sprintf("%s/data/2.5/weather", weatherUri())
 	req, err := http.NewRequest("GET", uri, nil)
 	if err != nil {
-		log.Fatalf("Error creating HTTP request %s", err)
+		log.Printf("Error creating HTTP request %s", err)
 		return weather
 	}
 
-	req.Header.Add("Accept", `application/json`)
+	req.Header.Add("Accept", "application/json")
 	q := req.URL.Query()
 	q.Add("q", city)
 	q.Add("appid", weatherAppid())
@@ -102,21 +100,21 @@ func retrieveWeather(city string) CurrentWeather {
 
 	resp, err := c.Do(req)
 	if err != nil {
-		log.Fatalf("Error during HTTP request %s", err)
+		log.Printf("Error during HTTP request %s", err)
 		return weather
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatalf("Error reading HTTP response %s", err)
+		log.Printf("Error reading HTTP response %s", err)
 		return weather
 	}
 
 	response := response{}
 	err = json.Unmarshal(body, &response)
 	if err != nil {
-		log.Fatalf("Error unmarshalling JSON response %s", err)
+		log.Printf("Error unmarshalling JSON response %s", err)
 		return weather
 	}
 
