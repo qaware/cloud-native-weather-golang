@@ -53,7 +53,7 @@ func GetOrRetrieveWeather(city string) CurrentWeather {
 			log.Printf("Error creating current weather %s", result.Error)
 		}
 	} else {
-		if nextUpdate().After(weather.NextUpdate) {
+		if time.Now().After(weather.NextUpdate) {
 			// retrieve and store weather from OpenWeatherMap API
 			weather = retrieveWeather(city)
 			result := DB.Save(&weather)
