@@ -67,7 +67,7 @@ func GetOrRetrieveWeather(city string) CurrentWeather {
 }
 
 func nextUpdate() time.Time {
-	return time.Now().Add(time.Hour * 8)
+	return time.Now().Add(time.Hour * 1)
 }
 
 type response struct {
