@@ -21,6 +21,9 @@ func main() {
 
 	engine.GET("/api/weather", queryWeather) // get weather for city
 
+	engine.GET("/healtz", healthz)
+	engine.GET("/readyz", readyz)
+
 	ConnectDatabase()
 	engine.Run(port())
 }
@@ -28,4 +31,12 @@ func main() {
 func queryWeather(c *gin.Context) {
 	weather := GetOrRetrieveWeather(c.Query("city"))
 	c.JSON(http.StatusOK, weather)
+}
+
+func healthz(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": "UP"})
+}
+
+func readyz(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{"status": "UP"})
 }

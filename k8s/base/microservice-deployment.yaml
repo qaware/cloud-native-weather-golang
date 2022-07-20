@@ -30,13 +30,13 @@ spec:
           periodSeconds: 30
           httpGet:
             port: http
-            path: "/"
+            path: "/healthz"
         readinessProbe:
           timeoutSeconds: 1
           initialDelaySeconds: 3
           httpGet:
             port: http
-            path: "/"
+            path: "/readyz"
         ports:
           - name: http
             containerPort: 8080

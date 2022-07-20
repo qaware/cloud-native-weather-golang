@@ -7,6 +7,11 @@ commonLabels:
 resources:
   # you can also specify a Git repo URL here
   - ../../base/
+
+images:
+  - name: cloud-native-weather-golang
+    newName: ghcr.io/qaware/cloud-native-weather-golang
+    newTag: 1.1.0
   
 patchesStrategicMerge:
   - 2-replicas.yaml
