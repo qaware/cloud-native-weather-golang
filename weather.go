@@ -37,9 +37,10 @@ func ConnectDatabase() {
 
 // Weather structure
 type CurrentWeather struct {
-	City       string    `json:"city" gorm:"primaryKey"`
-	Weather    string    `json:"weather"`
-	NextUpdate time.Time `json:"-"`
+	City        string    `json:"city" gorm:"primaryKey"`
+	Weather     string    `json:"weather"`
+	Temperature float32   `json:"temperature"`
+	NextUpdate  time.Time `json:"-"`
 }
 
 // GetWeather returns the weather for a given city
@@ -72,7 +73,13 @@ func nextUpdate() time.Time {
 
 type response struct {
 	Name    string           `json:"name"`
-	Weather []weatherDetails `json:"weather"`
+	Main    weatherMain      `json:"main"`
+	Details []weatherDetails `json:"weather"`
+	// other fields are ignored
+}
+
+type weatherMain struct {
+	Temp float32 `json:"temp"`
 	// other fields are ignored
 }
 
@@ -82,7 +89,7 @@ type weatherDetails struct {
 }
 
 func retrieveWeather(city string) CurrentWeather {
-	weather := CurrentWeather{City: city, Weather: "Unknown", NextUpdate: nextUpdate()}
+	weather := CurrentWeather{City: city, Weather: "Unknown", Temperature: 0.0, NextUpdate: nextUpdate()}
 
 	c := http.Client{Timeout: time.Second * 30}
 	uri := fmt.Sprintf("%s/data/2.5/weather", weatherUri())
@@ -118,6 +125,8 @@ func retrieveWeather(city string) CurrentWeather {
 		return weather
 	}
 
-	weather.Weather = response.Weather[0].Main
+	weather.Weather = response.Details[0].Main
+	weather.Temperature = response.Main.Temp
+
 	return weather
 }
