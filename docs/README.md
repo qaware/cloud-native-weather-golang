@@ -33,7 +33,42 @@ With this, you can now start to implement the required business logic of the wea
 
 ## Crosscutting Concerns
 
+### Configuration
 
+### Observability
+
+The 3 pillars of good observability are: Logging, Metrics and Tracing. Using the appropriate middleware
+these traits can be introduced pretty easily into the weather service application.
+
+**Lab Instructions**
+1. Expose a /metrics endpoint that exposes Prometheus formatted data
+2. (_optional_) Introduce and emit OpenTelemetry tracing data
+3. (_optional_) Introduce and use JSON structured logging as output
+
+<details>
+  <summary markdown="span">Click to expand solution ...</summary>
+
+There are several libraries that expose Prometheus compatible metrics via the Gin framework.
+```bash
+go get github.com/penglongli/gin-metrics
+go mod tidy
+```
+
+Enable the Metrics middleware for the weather service application in `main.go`.
+```golang
+  // get global Monitor object
+	m := ginmetrics.GetMonitor()
+	// +optional set metric path, default /debug/metrics
+	m.SetMetricPath("/metrics")
+	// +optional set slow time, default 5s
+	m.SetSlowTime(10)
+	// +optional set request duration, default {0.1, 0.3, 1.2, 5, 10}
+	// used to p95, p99
+	m.SetDuration([]float64{0.1, 0.3, 1.2, 5, 10})
+	// set middleware for gin
+	m.Use(engine)
+```
+</details>
 
 ## Containerization
 
@@ -73,7 +108,7 @@ CMD ["/weather-service"]
 
 ## K8s Deployment
 
-### Kustomize
+### Option a) Kustomize
 
 
 
@@ -82,7 +117,7 @@ CMD ["/weather-service"]
 
 </details>
 
-### Helm Chart
+### Option b) Helm Chart
 
 _TODO_
 
@@ -101,7 +136,7 @@ git push origin gh-pages
 ## Continuous Development
 
 A good and efficient developer experience (DevEx) is of utmost importance for any cloud-native software
-engineer. Rule 1: stay local as long as possible. Rule 2: automate all required steps: compile and package the source code, containerize the artifact and deploy the K8s resources locally. Continuously. The tools _Tilt_ and _Skaffold_ can both be used to establish this continuous dev-loop. For this section, you
+engineer. Rule 1: stay local as long as possible. Rule 2: automate all required steps: compile and package the source code, containerize the artifact and deploy the Kubernetes resources locally. Continuously. The tools _Tilt_ and _Skaffold_ can both be used to establish this continuous dev-loop. For this section, you
 only need to choose and use one of them.
 
 ### Option a) Tilt
