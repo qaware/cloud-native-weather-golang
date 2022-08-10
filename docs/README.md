@@ -2,6 +2,19 @@
 
 ## Prerequisites
 
+Before you dive right into Cloud-native development with Go, make sure your local development
+environment is setup properly! 
+
+- Modern Operating System (Windows 10, MacOS, ...) with terminal and shell
+- IDE of your personal choice (with relevant plugins installed)
+  - IntelliJ Ultimate
+  - VS Code
+- Local Docker / Kubernetes installation (Docker Desktop, Rancher Desktop, Minikube)
+- [Golang](https://go.dev/doc/install)
+- [Kustomize](https://kustomize.io)
+- [Tilt](https://tilt.dev)
+- [Flux2](https://tilt.dev)
+
 ## Project setup
 
 The focus of this lab is not on the actual implementation of the service itself. However, kicking off
@@ -16,9 +29,11 @@ go get -u gorm.io/gorm
 go get -u gorm.io/driver/postgres
 ```
 
-With this, you can now start to implement the required business logic of the microservice application.
+With this, you can now start to implement the required business logic of the weather service application.
 
 ## Crosscutting Concerns
+
+
 
 ## Containerization
 
@@ -91,7 +106,7 @@ only need to choose and use one of them.
 
 ### Option a) Tilt
 
-In this step we are going to use [Tilt](https://tild.dev) to build, containerize and deploy the application
+In this step we are going to use [Tilt](https://tilt.dev) to build, containerize and deploy the application
 continuously to a local Kubernetes environment.
 
 **Lab Instructions**
