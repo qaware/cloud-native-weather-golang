@@ -1,5 +1,9 @@
 # Cloud-native Experience Lab Workshop
 
+This lab will focus on the development and deploment of the Cloud-native weather service application
+in Golang. It will take you through the relevant phases and tasks reuired to go from source code to a 
+fully deployed application on an integration environment.
+
 ## Prerequisites
 
 Before you dive right into Cloud-native development with Go, make sure your local development
@@ -33,7 +37,34 @@ With this, you can now start to implement the required business logic of the wea
 
 ## Crosscutting Concerns
 
+According to the [12-factor app principles](https://12factor.net), there are many cross-cutting concenrs that need to be addressed by a cloud-native application: configuration, observability and many more.
+
 ### Configuration
+
+The easiest option to introduce configurability is via ENV variables. So instead of using hard-coded
+configuration values, a default value should always be superceded by the environment value.
+
+**Lab Instructions**
+1. Add support for the HTTP port via a PORT environment variable
+2. (_optinal_) Add support for specific PostgreSQL configuration parameters using ENV variables
+3. (_optinal_) Add support for specific OpenWeatherMap parameters using ENV variables
+
+<details>
+  <summary markdown="span">Click to expand solution ...</summary>
+
+For each and every ENV variable create a function in the following form:
+```golang
+func port() string {
+	port := os.Getenv("PORT")
+	if len(port) == 0 {
+		port = "8080"
+	}
+	return ":" + port
+}
+
+Use the output of these functions instead of the raw string values for optimal configurability.
+```
+</details>
 
 ### Observability
 
@@ -41,7 +72,7 @@ The 3 pillars of good observability are: Logging, Metrics and Tracing. Using the
 these traits can be introduced pretty easily into the weather service application.
 
 **Lab Instructions**
-1. Expose a /metrics endpoint that exposes Prometheus formatted data
+1. Expose a /metrics endpoint that exposes Prometheus compatible data
 2. (_optional_) Introduce and emit OpenTelemetry tracing data
 3. (_optional_) Introduce and use JSON structured logging as output
 
@@ -108,9 +139,9 @@ CMD ["/weather-service"]
 
 ## K8s Deployment
 
+
+
 ### Option a) Kustomize
-
-
 
 <details>
   <summary markdown="span">Click to expand solution ...</summary>
