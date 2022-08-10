@@ -3,10 +3,12 @@
 ## Project setup
 
 ```bash
-$ go mod init github.com/qaware/cloud-native-weather-golang 
-$ go get -u gin-gonic/gin
-$ go get -u gorm.io/gorm
-$ go get -u gorm.io/driver/postgres
+go mod init github.com/qaware/cloud-native-weather-golang 
+touch main.go
+
+go get -u gin-gonic/gin
+go get -u gorm.io/gorm
+go get -u gorm.io/driver/postgres
 ```
 
 ## Crosscutting Concerns
@@ -14,6 +16,15 @@ $ go get -u gorm.io/driver/postgres
 ## Containerization
 
 ## K8s Deployment
+
+### Kustomize
+
+### Helm Chart
+
+git checkout --orphan gh-pages
+git reset --hard
+git commit --allow-empty -m "fresh and empty gh-pages branch"
+git push origin gh-pages
 
 ## Continuous Development
 
@@ -27,27 +38,34 @@ $ go get -u gorm.io/driver/postgres
 
 ## Continuous Deployment
 
-This application is part of the Cloud-native Experience Lab (for Software Engineers). It has been implemented 
-in several different languages and frameworks (Go, JavaEE, .NET, NodeJS). The main purpose of this app is to 
-showcase important cloud-native design and development principles.
+## Flux2
+
+In this step we are going to deploy the application using Flux2 onto the lab cluster. Flux will manage
+the whole lifecycle, from initial deployment to automatic updates in case of changes and new versions.
 
 **Lab Instructions**
-1. Read the installation instructions
-    - Weather Service: https://github.com/qaware/cloud-native-weather-golang
-    - Weather UI: https://github.com/qaware/cloud-native-weather-vue3
-2. Create a dedicated namespace via GitOps
-2. Install the weather service into dedicated namespace using Kustomize
-    - Patch the deployment and set `replicas: 2`
-3. Install the weather UI into dedicated namespace using Kustomize
+1. Clone the Gitops repository for your cluster and create a dedicated apps directory
+2. Create a dedicated K8s namespace resource
+3. Install the weather service into the apps namespace using Kustomize
     - Patch the deployment and set `replicas: 2`
     - Patch the service and set `type: LoadBalancer`
-3. (_optional_) Setup the image update automation workflow with suitable image repository and policy for the service and the UI
+4. (_optional_) Setup the image update automation workflow with suitable image repository and policy
 
 <details>
   <summary markdown="span">Click to expand solution ...</summary>
 
-First, create a `weather-namespace.yaml` file with the following content and add it to
-the applications GitOps directory like `applications/bare/microk8s-cloudkoffer/weather-service-golang/`.
+First, we need to onboard and integrate the application with the Gitops workflow and repository.
+```bash
+# clone the experience lab Gitops repository
+git clone https://github.com/qaware/cloud-native-explab.git
+# create dedicated apps directory
+take applications/bare/microk8s-cloudkoffer/weather-service-golang/
+# initialize Kustomize descriptor
+kustomize create
+```
+
+Create a `weather-namespace.yaml` file with the following content in the apps GitOps directory.
+Do not forget to register the file resource in your `kustomization.yaml`.
 ```yaml
 kind: Namespace
 apiVersion: v1
@@ -57,13 +75,11 @@ metadata:
 
 Next, create the relevant Flux2 resources, such as `GitRepository` and `Kustomization` for the application.
 ```bash
-cd applications/bare/microk8s-cloudkoffer
-
 flux create source git cloud-native-weather-golang \
     --url=https://github.com/qaware/cloud-native-weather-golang \
     --branch=main \
     --interval=5m0s \
-    --export > weather-service-golang/weather-source.yaml
+    --export > weather-source.yaml
 
 flux create kustomization cloud-native-weather-golang \
     --source=GitRepository/cloud-native-weather-golang \
@@ -71,10 +87,10 @@ flux create kustomization cloud-native-weather-golang \
     --prune=true \
     --interval=5m0s \
     --target-namespace=weather-golang \
-    --export > weather-service-golang/weather-kustomization.yaml
+    --export > weather-kustomization.yaml
 ```
 
-The Kustomize patches need to be added manually to the `weather-kustomization.yaml`.
+The desired environment specific patches need to be added manually to the `weather-kustomization.yaml`, e.g.
 ```yaml
   images:
     - name: cloud-native-weather-golang
@@ -87,6 +103,12 @@ The Kustomize patches need to be added manually to the `weather-kustomization.ya
         name: weather-service
       spec:
         replicas: 2
+    - apiVersion: v1
+      kind: Service
+      metadata:
+        name: weather-service
+      spec:
+        type: LoadBalancer
 ```
 
 Finally, add and configure image repository and policy for the image update automation to work.
@@ -94,12 +116,21 @@ Finally, add and configure image repository and policy for the image update auto
 flux create image repository cloud-native-weather-golang \
     --image=ghcr.io/qaware/cloud-native-weather-golang \
     --interval 1m0s \
-    --export > weather-service-golang/weather-registry.yaml
+    --export > weather-registry.yaml
 
 flux create image policy cloud-native-weather-golang \
     --image-ref=cloud-native-weather-golang \
     --select-semver="1.2.x" \
-    --export > weather-service-golang/weather-policy.yaml
+    --export > weather-policy.yaml
 ```
 
+Once all files have been created and modified, Git commit and push everything and watch the cluster
+and Flux do the magic.
+
+```bash
+# to manually trigger the GitOps process use the following commands
+flux reconcile source git flux-system
+flux reconcile kustomization applications
+flux get all
+```
 </details>
