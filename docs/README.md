@@ -4,6 +4,9 @@
 
 ## Project setup
 
+The focus of this lab is not on the actual implementation of the service itself. However, kicking off
+a cloud-native project in Go is pretty straight forward.
+
 ```bash
 go mod init github.com/qaware/cloud-native-weather-golang 
 touch main.go
@@ -12,6 +15,8 @@ go get -u gin-gonic/gin
 go get -u gorm.io/gorm
 go get -u gorm.io/driver/postgres
 ```
+
+With this, you can now start to implement the required business logic of the microservice application.
 
 ## Crosscutting Concerns
 
@@ -55,6 +60,8 @@ CMD ["/weather-service"]
 
 ### Kustomize
 
+
+
 <details>
   <summary markdown="span">Click to expand solution ...</summary>
 
@@ -62,10 +69,13 @@ CMD ["/weather-service"]
 
 ### Helm Chart
 
+_TODO_
+
 <details>
   <summary markdown="span">Click to expand solution ...</summary>
 
 ```bash
+# prepare the gh-pages branch to serve the Helm chart
 git checkout --orphan gh-pages
 git reset --hard
 git commit --allow-empty -m "fresh and empty gh-pages branch"
@@ -76,13 +86,10 @@ git push origin gh-pages
 ## Continuous Development
 
 A good and efficient developer experience (DevEx) is of utmost importance for any cloud-native software
-engineer. Rule 1: stay local as long as possible. Rule 2: automate all required steps: compile and package the 
-source code, containerize the artifact and deploy the K8s resources locally. Continuously.
-
-The tools _Tilt_ and _Skaffold_ can both be used to establish this continuous dev-loop. For this section, you
+engineer. Rule 1: stay local as long as possible. Rule 2: automate all required steps: compile and package the source code, containerize the artifact and deploy the K8s resources locally. Continuously. The tools _Tilt_ and _Skaffold_ can both be used to establish this continuous dev-loop. For this section, you
 only need to choose and use one of them.
 
-### Tilt
+### Option a) Tilt
 
 In this step we are going to use [Tilt](https://tild.dev) to build, containerize and deploy the application
 continuously to a local Kubernetes environment.
@@ -113,7 +120,7 @@ k8s_resource(workload='weather-service', port_forwards=[port_forward(18080, 8080
 To see of everything is working as expected issue the following command: `tilt up`
 </details>
 
-### Skaffold
+### Option b) Skaffold
 
 In this step we are going to use [Skaffold](https://skaffold.dev) to build, containerize and deploy the application
 continuously to a local Kubernetes environment.
@@ -128,12 +135,16 @@ continuously to a local Kubernetes environment.
 <details>
   <summary markdown="span">Click to expand solution ...</summary>
 
+The 3 steps of building, deployment and port-forwarding can all be codified in the
+`skaffold.yaml` descriptor file.
+
 ```yaml
 apiVersion: skaffold/v2beta24
 kind: Config
 metadata:
   name: weather-service-golang
 
+# required for building the image
 build:
   tagPolicy:
     gitCommit: {}
@@ -146,11 +157,13 @@ build:
     useBuildkit: true
     useDockerCLI: false
 
+# required to deplo DEV overlay to default namespace
 deploy:
   kustomize:
     defaultNamespace: default
     paths: ["k8s/overlays/dev"]
 
+# create a local port-forward
 portForward:
   - resourceName: weather-service
     resourceType: service
