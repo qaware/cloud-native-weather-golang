@@ -1,5 +1,7 @@
 # Cloud-native Experience Lab Workshop
 
+## Prerequisites
+
 ## Project setup
 
 ```bash
@@ -15,16 +17,52 @@ go get -u gorm.io/driver/postgres
 
 ## Containerization
 
+In this step we now need to containerize the application. With Go, we can leverage a multi-stage approach:
+the final runtime artifact is build during the image build stage and then used and copied in the final runtime
+stage (very similar to Cloud-native Build Packs approach).
+
+**Lab Instructions**
+1. Create a `Dockerfile` and add the following two stages
+    - Build the Go binary using the correct `golang` base
+    - Assemble the final runtime image using `gcr.io/distroless/base-debian11` as base
+
+<details>
+  <summary markdown="span">Click to expand solution ...</summary>
+
+```
+FROM golang:1.17-bullseye as build
+
+WORKDIR /go/src/app
+ADD . /go/src/app
+
+RUN go get -d -v ./...
+RUN go build -o /go/bin/weather-service
+
+FROM gcr.io/distroless/base-debian11
+
+ENV GIN_MODE=release
+ENV PORT=8080
+
+COPY --from=build /go/src/app/templates /templates
+COPY --from=build /go/src/app/favicon.ico /
+COPY --from=build /go/bin/weather-service /
+
+CMD ["/weather-service"]
+```
+</details>
+
 ## K8s Deployment
 
 ### Kustomize
 
 ### Helm Chart
 
+```bash
 git checkout --orphan gh-pages
 git reset --hard
 git commit --allow-empty -m "fresh and empty gh-pages branch"
 git push origin gh-pages
+```
 
 ## Continuous Development
 
@@ -34,8 +72,7 @@ git push origin gh-pages
 
 ## Continuous Integration
 
-For any software project there must be a CI tool that takes care of continuously building and testing the produced
-software artifacts on every change.
+For any software project there must be a CI tool that takes care of continuously building and testing the produced software artifacts on every change.
 
 ### Github Actions
 
