@@ -21,7 +21,7 @@ func main() {
 
 	engine.GET("/api/weather", queryWeather) // get weather for city
 
-	engine.GET("/healtz", healthz)
+	engine.GET("/healthz", healthz)
 	engine.GET("/readyz", readyz)
 
 	ConnectDatabase()
