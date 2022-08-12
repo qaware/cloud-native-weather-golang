@@ -6,3 +6,5 @@ cloud-native-weather-golang
 .vscode/
 .project
 .classpath
+*.out
+bin/
