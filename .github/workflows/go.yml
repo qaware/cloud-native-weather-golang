@@ -32,6 +32,6 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
         args: >
-          -Dsonar.organization=lreimer
-          -Dsonar.projectKey=cloud-native-weather-golang
+          -Dsonar.organization=qaware-github
+          -Dsonar.projectKey=qaware_cloud-native-weather-golang
           -Dsonar.branch.target=main
