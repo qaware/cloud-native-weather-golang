@@ -20,6 +20,10 @@ $ curl -X GET http://localhost:18080/api/weather\?city\=Rosenheim
 $ curl -X GET http://localhost:18080/
 ```
 
+## Lab Instructions
+
+The instructions for the Cloud-native Experience Lab workshop can be found in [docs/README.md](docs/README.md).
+
 ## Maintainer
 
 M.-Leander Reimer (@lreimer), <mario-leander.reimer@qaware.de>

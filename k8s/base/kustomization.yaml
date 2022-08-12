@@ -20,5 +20,5 @@ configMapGenerator:
 secretGenerator:
   - name: database-secrets
     literals:
-      - POSTGRES_PASSWORD=1qay2wsx
-      - POSTGRES_USER=golang
+      - POSTGRES_PASSWORD=
+      - POSTGRES_USER=

@@ -10,13 +10,6 @@ resources:
   - database-deployment.yaml
   - database-service.yaml
 
-configMapGenerator:
-  - name: database-configmap
-    behavior: merge
-    literals:
-      - POSTGRES_HOST=weather-database
-      - POSTGRES_DB=weather
-
 secretGenerator:
   - name: database-secrets
     behavior: merge
