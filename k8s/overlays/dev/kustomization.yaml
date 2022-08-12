@@ -7,8 +7,6 @@ commonLabels:
 resources:
   # you can also specify a Git repo URL here
   - ../../base/
-  - hoverfly-deployment.yaml
-  - hoverfly-service.yaml
   - database-deployment.yaml
   - database-service.yaml
 
