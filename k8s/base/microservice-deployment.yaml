@@ -3,6 +3,12 @@ kind: Deployment
 metadata:
   name: weather-service
   labels:
+    k8s-minipad/enabled: "true"
+    cloudcontrol.enabled: "true"
+    cloudcontrol.index: "1"
+    LAUNCHPAD_ENABLE: "true"
+    LAUNCHPAD_COLOR: RED
+    LAUNCHPAD_ROW: "1"
     type: microservice
 spec:
   replicas: 1
