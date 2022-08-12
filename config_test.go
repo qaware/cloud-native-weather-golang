@@ -39,9 +39,16 @@ func TestPostgresPassword(t *testing.T) {
 	}
 }
 
-func TestPostgresDb(t *testing.T) {
-	db := postgresDb()
-	if db != "weather" {
-		t.Fatalf(`Unexpected Postgres DB %v`, db)
+func TestWeatherUri(t *testing.T) {
+	uri := weatherUri()
+	if uri != "https://api.openweathermap.org" {
+		t.Fatalf(`Unexpected Weather URI %v`, uri)
+	}
+}
+
+func TestWeatherAppid(t *testing.T) {
+	appid := weatherAppid()
+	if appid != "5b3f51e527ba4ee2ba87940ce9705cb5" {
+		t.Fatalf(`Unexpected App ID %v`, appid)
 	}
 }
