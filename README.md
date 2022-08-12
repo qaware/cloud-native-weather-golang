@@ -1,3 +1,5 @@
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=qaware_cloud-native-weather-golang&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=qaware_cloud-native-weather-golang)
+
 # Cloud-native Weather Service with Golang
 
 This example implements a simple weather REST service using Golang, GORM and Gin.
