@@ -30,8 +30,3 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      with:
-        args: >
-          -Dsonar.organization=qaware-github
-          -Dsonar.projectKey=qaware_cloud-native-weather-golang
-          -Dsonar.branch.target=main
