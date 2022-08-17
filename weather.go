@@ -12,6 +12,8 @@ import (
 	"gorm.io/gorm"
 )
 
+const KelvinToCelsius = 273.15
+
 var DB *gorm.DB
 
 func ConnectDatabase() {
@@ -126,7 +128,7 @@ func retrieveWeather(city string) CurrentWeather {
 	}
 
 	weather.Weather = response.Details[0].Main
-	weather.Temperature = response.Main.Temp
+	weather.Temperature = response.Main.Temp - KelvinToCelsius
 
 	return weather
 }
