@@ -1,6 +1,6 @@
-# Cloud-native Experience Lab Workshop
+# Cloud-native Experience Lab Workshop (for Golang)
 
-This lab will focus on the development and deploment of the Cloud-native weather service application
+This lab will focus on the development and deployment of the Cloud-native weather service application
 in Golang. It will take you through the relevant phases and tasks reuired to go from source code to a 
 fully deployed application on an integration environment.
 
